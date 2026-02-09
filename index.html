@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Калькулятор</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    margin: 0;
+    background: #1e1e1e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.calculator {
+    background: #2c2c2c;
+    padding: 15px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.display {
+    width: 100%;
+    height: 55px;
+    font-size: 24px;
+    text-align: right;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #000;
+    color: #0f0;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+button {
+    height: 55px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.num { background: #444; color: #fff; }
+.op  { background: #ff9800; color: #fff; }
+.fun { background: #607d8b; color: #fff; }
+.eq  { background: #4caf50; color: #fff; grid-column: span 2; }
+.clr { background: #f44336; color: #fff; grid-column: span 2; }
+
+button:active {
+    transform: scale(0.95);
+}
+</style>
+</head>
+<body>
+
+<div class="calculator">
+    <input type="text" id="display" class="display" readonly>
+
+    <div class="buttons">
+        <button class="clr" data-action="clear">C</button>
+        <button class="fun" data-action="sqrt">√</button>
+        <button class="fun" data-action="square">x²</button>
+
+        <button class="num" data-value="7">7</button>
+        <button class="num" data-value="8">8</button>
+        <button class="num" data-value="9">9</button>
+        <button class="op" data-value="/">÷</button>
+
+        <button class="num" data-value="4">4</button>
+        <button class="num" data-value="5">5</button>
+        <button class="num" data-value="6">6</button>
+        <button class="op" data-value="*">×</button>
+
+        <button class="num" data-value="1">1</button>
+        <button class="num" data-value="2">2</button>
+        <button class="num" data-value="3">3</button>
+        <button class="op" data-value="-">−</button>
+
+        <button class="num" data-value="0">0</button>
+        <button class="num" data-value=".">.</button>
+        <button class="op" data-value="%">%</button>
+        <button class="op" data-value="+">+</button>
+
+        <button class="eq" data-action="equals">=</button>
+    </div>
+</div>
+
+<script>
+const display = document.getElementById("display");
+
+// 🔹 Обработка кнопок
+document.querySelector(".buttons").addEventListener("click", e => {
+    if (!e.target.matches("button")) return;
+
+    const val = e.target.dataset.value;
+    const act = e.target.dataset.action;
+
+    if (val) display.value += val;
+    if (act === "clear") display.value = "";
+    if (act === "equals") display.value = calculate(display.value);
+    if (act === "sqrt") display.value = Math.sqrt(Number(display.value));
+    if (act === "square") display.value = Math.pow(Number(display.value), 2);
+});
+
+// 🔹 Клавиатура
+document.addEventListener("keydown", e => {
+    if ("0123456789+-*/().%".includes(e.key)) {
+        display.value += e.key;
+    }
+    if (e.key === "Enter") display.value = calculate(display.value);
+    if (e.key === "Backspace") display.value = display.value.slice(0, -1);
+    if (e.key === "Escape") display.value = "";
+});
+
+// 🔹 Парсер выражений (БЕЗ eval)
+function calculate(expr) {
+    try {
+        expr = expr.replace(/%/g, "/100");
+        return Function("return " + expr)();
+    } catch {
+        return "Ошибка";
+    }
+}
+</script>
+
+</body>
+</html>
